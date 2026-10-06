@@ -1,0 +1,24 @@
+{% extends "shop/base.html" %}
+{% load humanize %}
+{% block title %}{{ med.name }} — Apteka{% endblock %}
+{% block content %}
+<div class="grid gap-8 md:grid-cols-2">
+  <div class="card aspect-square overflow-hidden">{% include "shop/_pic.html" %}</div>
+  <div>
+    <a href="{% url 'catalog' %}?cat={{ med.category.slug }}" class="inline-block rounded-md border-2 border-ink bg-white px-2 py-0.5 text-sm font-semibold hover:bg-lemon">{{ med.category }}</a>
+    <h1 class="mt-3 font-display text-4xl font-extrabold leading-tight">{{ med.name }}</h1>
+    <p class="mt-1 text-ink/70">{{ med.dosage }}{% if med.maker %} · {{ med.maker }}{% endif %}</p>
+    {% if med.needs_prescription %}<p class="mt-4 rounded-lg border-2 border-ink bg-coral/30 px-4 py-3 text-sm font-medium">Bu dori faqat shifokor retsepti bilan beriladi. Buyurtma qabul qilinganda retsept so'raladi.</p>{% endif %}
+    <p class="mt-5 font-display text-4xl font-extrabold">{{ med.price|intcomma }} <span class="text-lg font-semibold text-ink/60">so'm</span></p>
+    {% if med.in_stock %}
+    <form method="post" action="{% url 'cart_set' med.pk %}" class="mt-4 flex gap-3">{% csrf_token %}
+      <input type="hidden" name="add" value="1">
+      <input type="number" name="qty" value="1" min="1" max="{{ med.in_stock }}" class="field !w-24" aria-label="Soni">
+      <button class="btn-primary flex-1">Savatga qo'shish</button>
+    </form>
+    <p class="mt-2 text-sm text-ink/60">Omborda: {{ med.in_stock }} dona</p>
+    {% else %}<p class="mt-4 font-semibold">Hozircha omborda yo'q.</p>{% endif %}
+    {% if med.description %}<p class="mt-6 max-w-prose whitespace-pre-line leading-relaxed">{{ med.description }}</p>{% endif %}
+  </div>
+</div>
+{% endblock %}

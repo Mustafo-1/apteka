@@ -1,0 +1,36 @@
+{% extends "shop/base.html" %}
+{% load humanize %}
+{% block content %}
+<h1 class="mb-6 font-display text-3xl font-extrabold">Savat</h1>
+{% if items %}
+<div class="grid gap-8 lg:grid-cols-3">
+  <div class="space-y-4 lg:col-span-2">
+    {% for it in items %}
+    <div class="card flex flex-wrap items-center gap-4 p-3">
+      <div class="h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 border-ink">{% include "shop/_pic.html" with med=it.med %}</div>
+      <div class="min-w-[8rem] flex-1">
+        <a href="{{ it.med.get_absolute_url }}" class="font-display text-lg font-bold hover:underline">{{ it.med.name }}</a>
+        <p class="text-sm text-ink/60">{{ it.med.price|intcomma }} so'm</p>
+      </div>
+      <form method="post" action="{% url 'cart_set' it.med.pk %}" class="flex items-center gap-2">{% csrf_token %}
+        <input type="number" name="qty" value="{{ it.qty }}" min="0" max="{{ it.med.in_stock }}" class="field !w-16 !px-2" aria-label="Soni">
+        <button class="btn bg-white text-sm hover:bg-lemon">Yangilash</button>
+      </form>
+      <p class="w-28 text-right font-display text-lg font-bold">{{ it.sub|intcomma }}</p>
+    </div>
+    {% endfor %}
+    <p class="text-sm text-ink/60">Sonini 0 qilsangiz, dori savatdan olinadi.</p>
+  </div>
+  <aside class="card h-fit bg-lemon p-5">
+    <p class="flex justify-between font-display text-xl font-extrabold"><span>Jami</span><span>{{ total|intcomma }} so'm</span></p>
+    <a href="{% url 'checkout' %}" class="btn-primary mt-4 w-full">Buyurtma berish</a>
+    <p class="mt-3 text-sm">To'lov yetkazib berilganda, naqd yoki kartada.</p>
+  </aside>
+</div>
+{% else %}
+<div class="card p-10 text-center">
+  <p class="font-display text-xl font-bold">Savat bo'sh</p>
+  <a href="{% url 'catalog' %}" class="btn-primary mt-4">Dorilarni ko'rish</a>
+</div>
+{% endif %}
+{% endblock %}
